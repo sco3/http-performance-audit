@@ -4,8 +4,8 @@
 
 URL="http://127.0.0.1:8080"
 DURATION_SECONDS="10"
-CONNECTIONS=1
-THREADS=1
+CONNECTIONS=500
+THREADS=12
 
 echo "Starting benchmarks with the following parameters:"
 echo "URL: $URL"
