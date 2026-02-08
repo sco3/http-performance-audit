@@ -4,15 +4,17 @@ use std::time::Instant;
 
 #[ntex::main]
 async fn main() {
+    // In v3.x, initialization is async.
+    // This creates the internal connector and reactor bindings.
     let client = Client::new().await;
     let url = "http://127.0.0.1:8080";
 
     let total_requests = 500_000;
-    let concurrency = 12; // Adjust this based on your P-cores
+    let concurrency = 128; // Increased to fill the 500 connections in the pool
 
     println!(
-        "Starting benchmark: {} requests, concurrency {}...",
-        total_requests, concurrency
+        "🚀 Ntex 3.1 Client: 500k reqs @ {} concurrency",
+        concurrency
     );
     let start = Instant::now();
 
@@ -20,18 +22,23 @@ async fn main() {
         .map(|_| {
             let client = client.clone();
             async move {
-                // We don't even read the body to maximize raw RPS
-                let _ = client.get(url).send().await;
+                // To keep the connection alive, we send the request
+                // and await the response object.
+                if let Ok(mut response) = client.get(url).send().await {
+                    // IMPORTANT: You must wait for the body to finish
+                    // or the connection will be dropped/closed.
+                    let _ = response.body().await;
+                }
             }
         })
-        .buffer_unordered(concurrency) // This is the magic for throughput
+        .buffer_unordered(concurrency)
         .collect::<Vec<_>>()
         .await;
 
     let duration = start.elapsed();
-    let rps = total_requests as f64 / duration.as_secs_f64();
-
     println!("-----------------------------------");
-    println!("Finished in: {:?}", duration);
-    println!("Requests/sec: {:.2}", rps);
+    println!(
+        "Requests/sec: {:.2}",
+        total_requests as f64 / duration.as_secs_f64()
+    );
 }
