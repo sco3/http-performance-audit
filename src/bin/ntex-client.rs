@@ -24,7 +24,7 @@ async fn main() {
             async move {
                 // To keep the connection alive, we send the request
                 // and await the response object.
-                if let Ok(mut response) = client.get(url).send().await {
+                if let Ok(response) = client.get(url).send().await {
                     // IMPORTANT: You must wait for the body to finish
                     // or the connection will be dropped/closed.
                     let _ = response.body().await;
