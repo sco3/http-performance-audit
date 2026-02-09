@@ -14,7 +14,7 @@ async fn main() {
     );
     
     let url: hyper::Uri = "http://127.0.0.1:8080".parse().unwrap();
-    let workers = 12;
+    let workers = 1;
     let reqs_per_worker = 40_000;
     let total = workers * reqs_per_worker;
 
