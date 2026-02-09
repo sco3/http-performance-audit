@@ -112,3 +112,13 @@ All benchmarks are complete.
 ```
 
 </details>
+
+## Client Benchmark Results
+
+| Client | RPS |
+| --- | --- |
+| Hyper | 311876.21 |
+| Ntex + Neon-Uring | 192963.23 |
+| Ntex 3.1 | 181429.35 |
+| Reqwest | 218814.12 |
+| Go | 199168.04 |
